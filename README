@@ -1,0 +1,28 @@
+latlon2Wahlkreis API
+====================
+
+For the freifunk ip registration we need to determine the Wahlkreis for given
+lat/lon coordinates. This simple app is a basic API for this scenario
+
+# Start Server
+  $ virtualenv2 env
+  $ . env/bin/activate
+  $ pip install -r requirements.txt
+  $ python app.py
+
+ Test Request
+  $ curl http://localhost:5000/52.0/13.0
+  {
+      "name:": "Brandenburg an der Havel - Potsdam-Mittelmark I - Havelland III - Teltow-Fl\u00e4ming I", 
+      "number": 61
+  }
+
+GeoJSON data for Wahlkreise are taken from 
+
+  http://www.bundeswahlleiter.de/de/bundestagswahlen/BTW_BUND_09/wahlkreiseinteilung/kartogaphische_darstellung.html
+
+Projection of this shapefile is Lambert. To get usable data we need to convert
+the data into WSG84 projection and format it as geojson. We used gdal's util
+program ogr2ogr for this job:
+
+  $ ogr2ogr -f GeoJSON -t_srs crs:84 wahlkreise.geojson Geometrie_...shp
